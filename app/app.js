@@ -35,13 +35,31 @@ const connection = mysql.createConnection({
 
 // 6 uzduotis Martyno sprendimas 
 
+// app.get('/expenses', (req, res) => {
+//   connection.execute('SELECT * FROM expenses', (err, expenses) => {
+//     res.send(expenses);
+//   });
+// });
+
+// 7 uzduotis Martyno sprendimas grazinti islaidas pagal id
+
+// app.get('/expenses/:id', (req, res) => {
+//   const id = req.params.id;
+//   connection.execute('SELECT * FROM expenses WHERE userId = ?', [id], (err, expenses) => {
+//     res.json(expenses);
+//   });
+// });
+
+// sprendimas su query postman: expenses?userId=1
+
 app.get('/expenses', (req, res) => {
-  connection.execute('SELECT * FROM expenses', (err, expenses) => {
-    res.send(expenses);
+  const { userId } = req.query;
+  connection.execute('SELECT * FROM expenses WHERE userId=?', [userId], (err, expenses) => {
+      res.send(expenses);
   });
 });
 
-app.listen(3000, () => {
-    console.log('Server listening on port 3000');
+app.listen(8080, () => {
+    console.log('Server listening on port 8080');
   });
   
