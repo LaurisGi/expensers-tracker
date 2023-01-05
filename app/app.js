@@ -2,6 +2,10 @@ const cors = require('cors');
 const mysql2 = require('mysql2/promise');
 const mysql = require('mysql2');
 const express = require('express');
+/// dotenv iskvietimui
+require('dotenv').config();
+
+console.log(process.env.MYSQ_HOST, process.env.MYSQL_USER, process.env.MYSQL_PASSWORD  )
 
 const app = express();
 
@@ -9,13 +13,15 @@ app.use(cors());
 app.use(express.json());
 
 
-const connection = mysql.createConnection({
-  host: '127.0.0.1',
-  user: 'root',
-  password: 'tomas1234',
-  database: 'expenses_tracker',
-  port: 3306
-});
+const mysqlConfig = {
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+  port: process.env.MYSQL_PORT
+};
+
+const connection = mysql.createConnection(mysqlConfig);
 
 // 6 uzduotis mano sprendimas
 // app.get('/expenses', (req, res) => {
@@ -58,6 +64,17 @@ app.get('/expenses', (req, res) => {
       res.send(expenses);
   });
 });
+
+app.post('/expenses', (req, res) => {
+  const {type, amount, userId} = req.body;
+  connection.query('INSERT INTO expenses (type, amount, userid) VALUES (?, ?, ?)', [type, amount, userId], (error, results) => {
+    console.log(`User with userid:${userId} added type: ${type} to expenses list`);
+  });
+    connection.query('SELECT * FROM expenses WHERE userId=?', [userId], (error, results) => {
+      if (error) throw error;
+      res.json(results);
+    });
+})
 
 app.listen(8080, () => {
     console.log('Server listening on port 8080');
