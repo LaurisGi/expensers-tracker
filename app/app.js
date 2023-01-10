@@ -2,6 +2,9 @@ const cors = require('cors');
 const mysql2 = require('mysql2/promise');
 const mysql = require('mysql2');
 const express = require('express');
+/// bcrypt packigo req
+const bcrypt = require('bcrypt');
+const e = require('cors');
 /// dotenv iskvietimui
 require('dotenv').config();
 
@@ -75,6 +78,62 @@ app.post('/expenses', (req, res) => {
       res.json(results);
     });
 })
+
+app.post('/register', (req, res) => {
+  const { name, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 12);
+
+   
+  connection.execute(
+    'INSERT INTO users (name, password) VALUES (?, ?)',
+    [name, hashedPassword], (err, result) => {
+      res.sendStatus(200);
+    });
+});
+// !!!!patikrinti kodel neveikia!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+app.post('/login', (req, res) => {
+  const { name, password } = req.body;
+
+  connection.execute(
+    'SELECT * FROM users WHERE name=?',
+    [name],
+    (err, result) => {
+      if (result.length === 0) {
+        res.send('Incorrect username or password');
+      } else {
+      const passwordHash = result[0].password
+      const isPasswordCorrect = bcrypt.compareSync(password, passwordHash);
+      if (isPasswordCorrect) {
+        res.send(result[0]);
+      } else {
+        res.send('Incorrect username or password');
+        console.log(result)
+      }
+  }});
+});
+//// !!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// app.post('/login', (req, res) => {
+//   const { name, password } = req.body;
+
+//   connection.execute(
+//       'SELECT * FROM users WHERE name=?',
+//       [name],
+//       (err, result) => {
+//           if (result.length === 0) {
+//               res.send('Incorrect username or password');
+//           } else {
+//               const passwordHash = result[0].password
+//               const isPasswordCorrect = bcrypt.compareSync(password, passwordHash);
+//               if (isPasswordCorrect) {
+//                   res.send('Successfully logged in!');
+//               } else {
+//                   res.send('Incorrect username or password');
+//               }
+//           }
+//       }
+//   );
+// });
+
 
 app.listen(8080, () => {
     console.log('Server listening on port 8080');

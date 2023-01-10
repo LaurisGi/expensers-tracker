@@ -34,9 +34,45 @@ const ExpenseType = styled.span`
     overflow: hidden;
 `
 
+
+const FormContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+`;
+
+const FormInput = styled.input`
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0px 0px 2px 1px #ccc;
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #4da6ff;
+  }
+`;
+
+const FormButton = styled.button`
+  background-color: #4da6ff;
+  color: #fff;
+  font-size: 18px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  &:hover {
+    background-color: #0077c9;
+  }
+`;
+
 export const Expenses = () => {
     const [expenses, setExpenses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [type, setType] = useState('');
+    const [amount, setAmount] = useState('');
 
 
     useEffect(() => {
@@ -52,8 +88,45 @@ export const Expenses = () => {
         return <div>Loading...</div>;
     }
 
+    const handleExpenseAdd = (e) => {
+        e.preventDefault();
+        fetch(`${process.env.REACT_APP_API_URL}/expenses`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type,
+                amount,
+                userId: 1
+            })
+        })
+        .then((res)=> res.json())
+        .then((data)=> {
+            setExpenses(data);
+            setType('');
+            setAmount('');
+        });
+    }
+
     return (
         <ExpensesList>
+            <form onSubmit={handleExpenseAdd}>
+                <FormInput
+                    placeholder="type"
+                    required 
+                    onChange={(e) => setType(e.target.value)}
+                    value={type}
+                /> 
+                <FormInput 
+                    placeholder="amount"
+                    type="number"
+                    required
+                    onChange={(e) => setAmount(e.target.value)}
+                    value={amount}
+                />
+                <FormButton type="submit">Add</FormButton>
+            </form>
             {expenses.map((exp) => (
                 <ExpensesListItem key={exp.id}>
                     <ExpenseType>{exp.type}</ExpenseType>
