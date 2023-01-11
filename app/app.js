@@ -83,11 +83,10 @@ app.post('/register', (req, res) => {
   const { name, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 12);
 
-   
   connection.execute(
     'INSERT INTO users (name, password) VALUES (?, ?)',
     [name, hashedPassword], (err, result) => {
-      res.sendStatus(200);
+      res.send(result);
     });
 });
 // !!!!patikrinti kodel neveikia!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -99,7 +98,8 @@ app.post('/login', (req, res) => {
     [name],
     (err, result) => {
       if (result.length === 0) {
-        res.send('Incorrect username or password');
+        res.status(401)
+        res.send({message: 'Incorrect username or password'});
       } else {
       const passwordHash = result[0].password
       const isPasswordCorrect = bcrypt.compareSync(password, passwordHash);

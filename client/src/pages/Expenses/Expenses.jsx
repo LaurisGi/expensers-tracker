@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useEffect } from "react"
 import { LOGGED_IN_USER } from "../../constants/constants"
 import styled from 'styled-components'
+import { Input } from "../../Components/Input/Input";
+import { Button } from "../../Components/Button/Button";
 
 const ExpensesList = styled.ul`
     display: flex;
@@ -42,31 +44,6 @@ const FormContainer = styled.div`
   padding: 20px;
 `;
 
-const FormInput = styled.input`
-  padding: 10px;
-  margin-bottom: 10px;
-  font-size: 18px;
-  border-radius: 5px;
-  border: none;
-  box-shadow: 0px 0px 2px 1px #ccc;
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #4da6ff;
-  }
-`;
-
-const FormButton = styled.button`
-  background-color: #4da6ff;
-  color: #fff;
-  font-size: 18px;
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  &:hover {
-    background-color: #0077c9;
-  }
-`;
 
 export const Expenses = () => {
     const [expenses, setExpenses] = useState([]);
@@ -112,20 +89,20 @@ export const Expenses = () => {
     return (
         <ExpensesList>
             <form onSubmit={handleExpenseAdd}>
-                <FormInput
+                <Input
                     placeholder="type"
                     required 
                     onChange={(e) => setType(e.target.value)}
                     value={type}
                 /> 
-                <FormInput 
+                <Input
                     placeholder="amount"
                     type="number"
                     required
                     onChange={(e) => setAmount(e.target.value)}
                     value={amount}
                 />
-                <FormButton type="submit">Add</FormButton>
+                <Button type="submit">Add</Button>
             </form>
             {expenses.map((exp) => (
                 <ExpensesListItem key={exp.id}>
